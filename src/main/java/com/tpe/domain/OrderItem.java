@@ -1,14 +1,45 @@
 package com.tpe.domain;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+
 //3-
+@Entity
+@Getter
+@Setter
 public class OrderItem {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
+    private Long id;
+
+    @NotNull(message = "Quantity is required!")
+    private Integer quantity;
+
+    @Setter(AccessLevel.NONE)
+    private Double totalPrice;
+
+    @ManyToOne//proje tasarimina gore bir siparis kalemi sadece bir urun cesidi icin olusturulur
+    @JoinColumn(nullable = false)
+    private Product product;
+
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    @JsonIgnore//bu fieldi json formatina donusturmeyi ignor et
+    private Customer customer;
+
+    //persist ve updateden once bu method cagrilarak totalPrice set edilecek
+    @PrePersist
+    @PreUpdate
+    public void countTotalPrice(){
+        this.totalPrice=this.quantity*this.product.getPrice();
+    }
+
 }
 
-//ÖDEV:4-CustomerController Class
-//     5-CustomerService Class
-//     6-CustomerRepository interface
-//     7-ProductController Class
-//     8-ProductService Class
-//     9-ProductRepository interface
-//     10-OrderController Class
-//     11-OrderService Class
-//     12-OrderRepository interface
+
