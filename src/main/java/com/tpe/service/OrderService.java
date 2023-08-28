@@ -1,6 +1,8 @@
 package com.tpe.service;
 
+import com.tpe.domain.Customer;
 import com.tpe.domain.OrderItem;
+import com.tpe.domain.Product;
 import com.tpe.dto.OrderItemDTO;
 import com.tpe.exception.ResourceNotFoundException;
 import com.tpe.repository.OrderRepository;
@@ -13,6 +15,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderService {
     private final OrderRepository orderRepository;
+    private final CustomerService customerService;
+    private final ProductService productService;
 
 
     public List<OrderItem> getAllOrderItem() {
@@ -32,5 +36,25 @@ public class OrderService {
     public void deleteOrderById(Long id) {
         OrderItem orderItem=getOrderById(id);
         orderRepository.delete(orderItem);
+    }
+
+    //27-b
+    public void createOrder(Long customId, Long prodId, Integer quantity) {
+        OrderItem orderItem=null;
+        Customer customer=customerService.getCustomerById(customId);
+        Product product=productService.getProductById(prodId);
+        //bu urun icin daha once siparis olusturulmu
+        boolean isSameProduct= orderRepository.existsByCustomerAndProduct(customer,product);
+        if (isSameProduct){//ayni urun var ise quantityi artir
+           orderItem=orderRepository.findByCustomerIdAndProductId(customId,prodId);
+            orderItem.setQuantity(orderItem.getQuantity()+quantity);
+        }else {//yeni urun ise
+            orderItem= new OrderItem();
+            orderItem.setCustomer(customer);
+            orderItem.setProduct(product);
+            orderItem.setQuantity(quantity);
+        }
+        //countTotalPrice() devreye gircek
+        orderRepository.save(orderItem);
     }
 }

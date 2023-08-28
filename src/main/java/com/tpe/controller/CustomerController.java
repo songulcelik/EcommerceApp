@@ -1,7 +1,9 @@
 package com.tpe.controller;
 
 import com.tpe.domain.Customer;
+import com.tpe.domain.OrderItem;
 import com.tpe.dto.CustomerDTO;
+import com.tpe.dto.OrderItemDTO;
 import com.tpe.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 
 //4--
 @RestController//restapi icin kontroller
@@ -102,20 +105,41 @@ Product:
     }
 
 
-
     //23-fullname ile customer getirme-> http://localhost:8080/customers/fullquery?
     //name=Jack&lastName=Sparrow
-    //odev--> jpql kullanmdan hazir method
+    @GetMapping("/fullquery")
+    public ResponseEntity<List<Customer>> getAllCustomerByFullName(@RequestParam("name") String name,
+                                                                   @RequestParam("lastName") String lastName){
+        List<Customer> customers=customerService.getAllCustomerByFullName(name,lastName);
+        return ResponseEntity.ok(customers);
+    }
+
+
+
 
 
     //24-İsmi ... içeren customerlar -> http://localhost:8080/customers/jpql?name=Ja
+    @GetMapping("/jpql")
+    public ResponseEntity<List<Customer>> getAllCustomerByNameLike(@RequestParam("name") String word){
+        List<Customer> customerList=customerService.getAllCustomerByNameLike(word);
+    return ResponseEntity.ok(customerList);//200
+    }
+
+    //25-Idsi verilen müşterinin tüm siparişlerini getirme -> http://localhost:8080/customers/allorder/1
+    //25b set donmeyelim orderdtodan yapalim
+    @GetMapping("/allorder/{id}")
+    public ResponseEntity<Set<OrderItemDTO>> getAllOrderByCustomer(@PathVariable Long id){
+
+        //Set<OrderItem> orders= customerService.getCustomerById(id).getOrders();
+        Set<OrderItemDTO> orderItemDTOS=customerService.getAllOrderOfCustomer(id);
+        return ResponseEntity.ok(orderItemDTOS);
+    }
 
 
     //-ÖDEV:Requestle gelen "harf dizisi" name veya lastname inde geçen customerları döndür.
     //-> http://localhost:8080/customers/search?word=pa
 
 
-    //25-Idsi verilen müşterinin tüm siparişlerini getirme -> http://localhost:8080/customers/allorder/1
 
 
 }

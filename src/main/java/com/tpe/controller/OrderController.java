@@ -4,6 +4,7 @@ import com.tpe.domain.OrderItem;
 import com.tpe.dto.OrderItemDTO;
 import com.tpe.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +17,17 @@ public class OrderController {
     private final OrderService orderService;
    // 1-sipariş oluşturma ->http://localhost:8080/orders/save/filter?cid=1&prod=1&quant=3
 //farklı üründe yeni sipariş, aynı üründe sayı artırılır
+
+    @PostMapping("/save/filter/")
+    public ResponseEntity<String> createOrderItem(@RequestParam("cid") Long customId,
+                                                  @RequestParam("prod") Long prodId,
+                                                  @RequestParam("quant") Integer quantity){
+        orderService.createOrder(customId,prodId,quantity);
+        return new ResponseEntity<>("Order Item is cerated successfully", HttpStatus.CREATED);//201
+
+    }
+
+
 
 
 
