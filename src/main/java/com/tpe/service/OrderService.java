@@ -54,7 +54,23 @@ public class OrderService {
             orderItem.setProduct(product);
             orderItem.setQuantity(quantity);
         }
-        //countTotalPrice() devreye gircek
+        //countTotalPrice() devreye gircek, prePersist, preUpdate kullanildigi icin by methodu cagirmaya gerek yok
         orderRepository.save(orderItem);
     }
+
+    //id ile sipariş miktarını update etme
+    public void updateQuantity(Long id, Integer quantity) {
+        if (quantity==0){
+            deleteOrderById(id);
+        }else {
+            OrderItem order= getOrderById(id);
+            order.setQuantity(quantity);
+            //order.countTotalPrice(); buna gerek yok preupdate vardi
+            orderRepository.save(order);//update
+        }
+    }
+
+
+
+
 }

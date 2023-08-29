@@ -18,10 +18,14 @@ public class OrderController {
    // 1-sipariş oluşturma ->http://localhost:8080/orders/save/filter?cid=1&prod=1&quant=3
 //farklı üründe yeni sipariş, aynı üründe sayı artırılır
 
-    @PostMapping("/save/filter/")
+    @PostMapping("/save/filter")
     public ResponseEntity<String> createOrderItem(@RequestParam("cid") Long customId,
                                                   @RequestParam("prod") Long prodId,
                                                   @RequestParam("quant") Integer quantity){
+
+        if (quantity<=0){
+            return new ResponseEntity<>("Quantity must be positive",HttpStatus.BAD_REQUEST);
+        }
         orderService.createOrder(customId,prodId,quantity);
         return new ResponseEntity<>("Order Item is cerated successfully", HttpStatus.CREATED);//201
 
@@ -33,11 +37,32 @@ public class OrderController {
 
     //2-tüm siparişleri getirme ->http://localhost:8080/orders + get
 
+    //ödevvvv
+
+
+
     @GetMapping
     public ResponseEntity<List<OrderItem>> allOrderItem(){
         List<OrderItem> orders=orderService.getAllOrderItem();
         return ResponseEntity.ok(orders);
     }
+
+   //4-Id ile sipariş miktarını update etme ->http://localhost:8080/orders/update/5/quantity/30
+   //quantity=0 ise siparişi sil, aksi halde miktari guncelle
+
+    @PutMapping("/update/{id}/quantity/{qua}")
+    public ResponseEntity<String> updateQuantity(@PathVariable("id") Long id, @PathVariable("qua") Integer quantity){
+        if (quantity<0){
+            return new ResponseEntity<>("Quantity can not be negative",HttpStatus.BAD_REQUEST);
+        }
+        orderService.updateQuantity(id,quantity);
+
+        return ResponseEntity.ok("Quantity is updated");//200
+    }
+
+
+
+
 
     //3-Id ile sipariş getirme ->http://localhost:8080/orders/5
     @GetMapping("/{id}")

@@ -53,8 +53,7 @@ public class ProductController {
         return ResponseEntity.ok(productDto);
     }
 
-    //4-tüm productları page page gösterme ->http://localhost:8080/products/page?page=1&size=2
-    //&sort=id&direction=ASC
+    //4-tüm productları page page gösterme ->http://localhost:8080/products/page?page=1&size&sort=id&direction=ASC
     @GetMapping("/page")
     public ResponseEntity<Page<Product>> getAllByPage(@RequestParam("page") int page,
                                                       @RequestParam("size") int size,
